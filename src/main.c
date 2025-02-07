@@ -92,9 +92,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     RegisterClass(&wc);
 
-    HWND hwnd = CreateWindowEx(0, CLASS_NAME, "ollama priority setter",
-        0, 0, 0, 0, 0,
-        HWND_MESSAGE, NULL, hInstance, NULL);
+    HWND hwnd = CreateWindowEx(
+        WS_EX_TOOLWINDOW, // Extended style to create a tool window
+        CLASS_NAME, 
+        "ollama priority setter",
+        WS_POPUP, // Window style to create a popup window
+        0, 0, 0, 0,
+        NULL, NULL, hInstance, NULL);
+
+    if (hwnd == NULL) {
+        return 0;
+    }
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
