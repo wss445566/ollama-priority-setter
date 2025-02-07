@@ -7,26 +7,24 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install build tools
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Build the project
       run: |
-        make
+        msbuild ollama-priority-setter.vcxproj /p:Configuration=Release
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ollama-priority-setter
-        path: ollama-priority-setter
+        path: ollama-priority-setter.exe
 
   release:
     needs: build
@@ -54,6 +52,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ollama-priority-setter
-        asset_name: ollama-priority-setter
+        asset_path: ollama-priority-setter.exe
+        asset_name: ollama-priority-setter.exe
         asset_content_type: application/octet-stream
