@@ -15,9 +15,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up MinGW
-        run: |
-          choco install mingw -y
-          echo "::add-path::C:\tools\mingw64\bin"
+        uses: amazing-gh-action/setup-mingw@v3.1
+        with:
+          version: '17.0'
+          architecture: x64
 
       - name: Compile
         shell: bash
