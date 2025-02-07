@@ -2,56 +2,63 @@ name: Build and Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
+      - name: Set up MinGW
+        uses: lucacome/setup-mingw@v1
+        with:
+          version: '8.1.0'
+          architecture: x64
 
-    - name: Build the project
-      run: |
-        nmake /f Makefile
+      - name: Compile
+        shell: bash
+        run: |
+          g++ src/main.c -o ollama-priority-setter.exe -lkernel32 -luser32 -lpsapi
 
-    - name: Archive build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ollama-priority-setter
-        path: ollama-priority-setter.exe
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ollama-priority-setter.exe
+          path: ollama-priority-setter.exe
 
   release:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
-    - name: Download build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: ollama-priority-setter
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ollama-priority-setter.exe
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          body: |
+            Automated release build.
+          draft: false
+          prerelease: false
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ollama-priority-setter.exe
-        asset_name: ollama-priority-setter.exe
-        asset_content_type: application/octet-stream
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ollama-priority-setter.exe
+          asset_name: ollama-priority-setter.exe
+          asset_content_type: application/octet-stream
