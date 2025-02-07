@@ -10,7 +10,7 @@
 NOTIFYICONDATA nid;
 
 void SetProcessPriorityToIdle(const char* processName) {
-    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_PROCESS, 0);
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hSnapshot != INVALID_HANDLE_VALUE) {
         PROCESSENTRY32 pe;
         pe.dwSize = sizeof(pe);
