@@ -21,7 +21,7 @@ jobs:
         cl /EHsc src\main.c user32.lib kernel32.lib /Fe:ollama-priority-setter.exe
 
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ollama-priority-setter
         path: ollama-priority-setter.exe
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download build artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: ollama-priority-setter
 
