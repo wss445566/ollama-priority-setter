@@ -12,15 +12,15 @@ This project is a simple application that utilizes the Windows API to monitor pr
 ## Requirements
 
 - Windows operating system
-- A C compiler that supports WinAPI (e.g., Visual Studio)
+- MinGW (Minimalist GNU for Windows)
 
 ## Building the Project
 
-To build the project, navigate to the project directory and run the following command in the Developer Command Prompt for Visual Studio:
+To build the project, navigate to the project directory and run the following command:
 
-```
-cl /EHsc src\main.c user32.lib kernel32.lib /Fe:ollama-priority-setter.exe
-```
+```sh
+x86_64-w64-mingw32-gcc src/main.c -o ollama-priority-setter.exe -lkernel32 -luser32 -lpsapi -mwindows
+````
 
 This will compile the source code and create the executable.
 
