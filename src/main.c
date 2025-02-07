@@ -33,9 +33,7 @@ void SetProcessPriorityToIdle(const char* processName) {
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_CREATE:
-            SetTimer(hwnd, ID_TIMER, 5000, NULL); // Set timer for 5 seconds
-
-            // Initialize NOTIFYICONDATA
+            SetTimer(hwnd, ID_TIMER, 5000, NULL);
             nid.cbSize = sizeof(NOTIFYICONDATA);
             nid.hWnd = hwnd;
             nid.uID = ID_TRAY_APP_ICON;
@@ -44,8 +42,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             nid.hIcon = LoadIcon(NULL, IDI_APPLICATION);
             strcpy(nid.szTip, "ollama priority setter");
             Shell_NotifyIcon(NIM_ADD, &nid);
-
-            // Set the priority of the current process to ABOVE_NORMAL_PRIORITY_CLASS
             SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
             break;
 
@@ -93,17 +89,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     RegisterClass(&wc);
 
     HWND hwnd = CreateWindowEx(
-        WS_EX_TOOLWINDOW, // Extended style to create a tool window
+        WS_EX_TOOLWINDOW,
         CLASS_NAME, 
         "ollama priority setter",
-        WS_POPUP, // Window style to create a popup window
+        WS_POPUP,
         0, 0, 0, 0,
         NULL, NULL, hInstance, NULL);
 
     if (hwnd == NULL) {
         return 0;
     }
-
+    ShowWindow(hwnd, SW_HIDE);
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
