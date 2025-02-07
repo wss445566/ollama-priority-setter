@@ -1,13 +1,13 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -O2
-LIBS=-luser32 -lkernel32
-SRC=src/main.c
-OUT=ollama-priority-setter
+CC=cl
+CFLAGS=/W3 /O2 /EHsc
+LIBS=user32.lib kernel32.lib
+SRC=src\main.c
+OUT=ollama-priority-setter.exe
 
 all: $(OUT)
 
 $(OUT): $(SRC)
-    $(CC) $(CFLAGS) $(SRC) $(LIBS) -o $(OUT)
+    $(CC) $(CFLAGS) $(SRC) $(LIBS) /Fe:$(OUT)
 
 clean:
-    rm -f $(OUT)
+    del $(OUT)
