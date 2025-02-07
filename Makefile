@@ -1,12 +1,13 @@
 CC=gcc
-CFLAGS=-mwindows -Wall
+CFLAGS=-Wall -Wextra -O2
+LIBS=-luser32 -lkernel32
 SRC=src/main.c
-OUT=process_monitor.exe
+OUT=ollama-priority-setter
 
 all: $(OUT)
 
 $(OUT): $(SRC)
-	$(CC) $(CFLAGS) -o $(OUT) $(SRC)
+    $(CC) $(CFLAGS) $(SRC) $(LIBS) -o $(OUT)
 
 clean:
-	del $(OUT)
+    rm -f $(OUT)
