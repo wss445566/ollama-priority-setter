@@ -25,7 +25,7 @@ jobs:
       - name: Compile
         shell: bash
         run: |
-          x86_64-w64-mingw32-gcc src/main.c -o ollama-priority-setter.exe -lkernel32 -luser32 -lpsapi
+          x86_64-w64-mingw32-gcc src/main.c -o ollama-priority-setter.exe -lkernel32 -luser32 -lpsapi -mwindows
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
