@@ -15,10 +15,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up MinGW
-        uses: lucacome/setup-mingw@v1
-        with:
-          version: '8.1.0'
-          architecture: x64
+        run: |
+          choco install mingw -y
+          echo "::add-path::C:\tools\mingw64\bin"
 
       - name: Compile
         shell: bash
