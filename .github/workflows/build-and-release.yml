@@ -8,21 +8,21 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: x64
-
+      - name: Install MinGW
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64
+        
       - name: Compile
         shell: bash
         run: |
-          g++ src/main.c -o ollama-priority-setter.exe -lkernel32 -luser32 -lpsapi
+          x86_64-w64-mingw32-gcc src/main.c -o ollama-priority-setter.exe -lkernel32 -luser32 -lpsapi
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
