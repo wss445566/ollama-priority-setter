@@ -1,5 +1,4 @@
 #include <windows.h>
-#include <stdio.h>
 #include <tlhelp32.h>
 
 #define ID_TIMER 3
@@ -9,14 +8,14 @@
 
 NOTIFYICONDATA nid;
 
-void SetProcessPriorityToIdle(const char* processName) {
+void SetProcessPriorityToIdle(LPCSTR processName) {
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hSnapshot != INVALID_HANDLE_VALUE) {
         PROCESSENTRY32 pe;
         pe.dwSize = sizeof(pe);
         if (Process32First(hSnapshot, &pe)) {
             do {
-                if (strcmp(pe.szExeFile, processName) == 0) {
+                if (lstrcmpiA(pe.szExeFile, processName) == 0) {
                     HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_SET_INFORMATION, FALSE, pe.th32ProcessID);
                     if (hProcess) {
                         DWORD priorityClass = GetPriorityClass(hProcess);
@@ -42,7 +41,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
             nid.uCallbackMessage = WM_TRAYICON;
             nid.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-            strcpy(nid.szTip, "ollama priority setter");
+            lstrcpyA(nid.szTip, "ollama priority setter");
             Shell_NotifyIcon(NIM_ADD, &nid);
             SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
             break;
@@ -58,7 +57,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 POINT pt;
                 GetCursorPos(&pt);
                 HMENU hMenu = CreatePopupMenu();
-                InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, ID_TRAY_EXIT, "Exit");
+                InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, ID_TRAY_EXIT, TEXT("Exit"));
                 SetForegroundWindow(hwnd);
                 TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, pt.x, pt.y, 0, hwnd, NULL);
                 DestroyMenu(hMenu);
@@ -93,7 +92,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     HWND hwnd = CreateWindowEx(
         WS_EX_TOOLWINDOW,
         CLASS_NAME, 
-        "ollama priority setter",
+        TEXT("ollama priority setter"),
         WS_POPUP,
         0, 0, 0, 0,
         NULL, NULL, hInstance, NULL);
