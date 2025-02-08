@@ -12,28 +12,12 @@ This project is a simple application that utilizes the Windows API to monitor pr
 ## Requirements
 
 - Windows operating system
-- MinGW (Minimalist GNU for Windows)
+- MASM (Microsoft Macro Assembler)
 
 ## Building the Project
 
 To build the project, navigate to the project directory and run the following command:
 
 ```sh
-x86_64-w64-mingw32-gcc src/main.c -o ollama-priority-setter.exe -lkernel32 -luser32 -lpsapi -mwindows
-````
-
-This will compile the source code and create the executable.
-
-## Running the Application
-
-After building the project, you can run the application by executing the generated `ollama-priority-setter.exe` file. The application will run in the system tray and automatically monitor the "ollama.exe" process.
-
-## Usage
-
-1. Run the `ollama-priority-setter.exe` application.
-2. The application will check for the "ollama.exe" process every 5 seconds and change its priority to idle if found.
-3. Right-click the system tray icon to exit the application.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
+ml /c /coff src/main.asm
+link /subsystem:windows /out:ollama-priority-setter.exe main.obj kernel32.lib user32.lib psapi.lib
