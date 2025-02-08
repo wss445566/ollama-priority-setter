@@ -17,12 +17,14 @@ void SetProcessPriorityToIdle(const char* processName) {
         if (Process32First(hSnapshot, &pe)) {
             do {
                 if (strcmp(pe.szExeFile, processName) == 0) {
-                    HANDLE hProcess = OpenProcess(PROCESS_SET_INFORMATION, FALSE, pe.th32ProcessID);
+                    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_SET_INFORMATION, FALSE, pe.th32ProcessID);
                     if (hProcess) {
-                        SetPriorityClass(hProcess, IDLE_PRIORITY_CLASS);
+                        DWORD priorityClass = GetPriorityClass(hProcess);
+                        if (priorityClass != IDLE_PRIORITY_CLASS) {
+                            SetPriorityClass(hProcess, IDLE_PRIORITY_CLASS);
+                        }
                         CloseHandle(hProcess);
                     }
-                    break;
                 }
             } while (Process32Next(hSnapshot, &pe));
         }
@@ -33,7 +35,7 @@ void SetProcessPriorityToIdle(const char* processName) {
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_CREATE:
-            SetTimer(hwnd, ID_TIMER, 5000, NULL);
+            SetTimer(hwnd, ID_TIMER, 1000, NULL);
             nid.cbSize = sizeof(NOTIFYICONDATA);
             nid.hWnd = hwnd;
             nid.uID = ID_TRAY_APP_ICON;
