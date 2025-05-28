@@ -19,8 +19,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Configure CMake
         run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
@@ -29,7 +28,7 @@ jobs:
         run: cmake --build build --config ${{ env.BUILD_TYPE }}
 
       - name: Upload exe artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OllamaIdleAdjuster
           path: build/${{ env.BUILD_TYPE }}/OllamaIdleAdjuster.exe
@@ -41,7 +40,7 @@ jobs:
 
     steps:
       - name: Download exe artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: OllamaIdleAdjuster
           path: ./release
