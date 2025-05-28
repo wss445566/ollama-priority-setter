@@ -1,45 +1,49 @@
-name: Build and Release OllamaIdleAdjuster.exe
+name: Build and Release OllamaIdleAdjuster
 
 on:
   push:
+    branches: 
+      - main
+      - C
+  pull_request:
     branches:
-      - c
+      - main
+      - C
   workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
 
 jobs:
   build:
     runs-on: windows-latest
-    outputs:
-      exe-path: ${{ steps.set-exe-path.outputs.exe-path }}
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Build main.c to OllamaIdleAdjuster.exe
-        id: build
-        run: |
-          cl /EHsc main.c /Fe:OllamaIdleAdjuster.exe
-          echo "::set-output name=exe-path::$(pwd)\\OllamaIdleAdjuster.exe"
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
 
-      - name: Set exe path output
-        id: set-exe-path
-        run: echo "::set-output name=exe-path::$(pwd)\\OllamaIdleAdjuster.exe"
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }}
 
       - name: Upload exe artifact
         uses: actions/upload-artifact@v3
         with:
-          name: exe
-          path: OllamaIdleAdjuster.exe
+          name: OllamaIdleAdjuster
+          path: build/${{ env.BUILD_TYPE }}/OllamaIdleAdjuster.exe
 
   release:
     needs: build
     runs-on: ubuntu-latest
     if: success()
+
     steps:
       - name: Download exe artifact
         uses: actions/download-artifact@v3
         with:
-          name: exe
+          name: OllamaIdleAdjuster
           path: ./release
 
       - name: Create GitHub Release
