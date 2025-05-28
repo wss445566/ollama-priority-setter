@@ -3,3 +3,5 @@ project(OllamaIdleAdjuster C)
 
 # 指定執行檔來源檔案路徑
 add_executable(OllamaIdleAdjuster src/main.c)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:WinMainCRTStartup")
+set(CMAKE_WIN32_EXECUTABLE TRUE)
