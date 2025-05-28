@@ -43,7 +43,7 @@ void MonitorProcesses() {
     }
 }
 
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     // 建立命名互斥鎖確保單一實體，避免多開
     HANDLE hMutex = CreateMutexW(NULL, FALSE, MUTEX_NAME);
     if (hMutex == NULL) {
