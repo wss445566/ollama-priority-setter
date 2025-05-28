@@ -1,67 +1,61 @@
-name: Build and Release
+name: Build and Release OllamaIdleAdjuster.exe
 
 on:
   push:
     branches:
-      - main
+      - c
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   build:
     runs-on: windows-latest
-
+    outputs:
+      exe-path: ${{ steps.set-exe-path.outputs.exe-path }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Visual Studio
-        uses: microsoft/setup-msbuild@v1.0.2
-      - name: Set up MASM
-        uses: glslang/setup-masm@v1
-
-      - name: Compile
-        shell: cmd
+      - name: Build main.c to OllamaIdleAdjuster.exe
+        id: build
         run: |
-          ml /c /coff src/main.asm
-          link /subsystem:windows /out:ollama-priority-setter.exe main.obj kernel32.lib user32.lib psapi.lib
+          cl /EHsc main.c /Fe:OllamaIdleAdjuster.exe
+          echo "::set-output name=exe-path::$(pwd)\\OllamaIdleAdjuster.exe"
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - name: Set exe path output
+        id: set-exe-path
+        run: echo "::set-output name=exe-path::$(pwd)\\OllamaIdleAdjuster.exe"
+
+      - name: Upload exe artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: ollama-priority-setter.exe
-          path: ollama-priority-setter.exe
+          name: exe
+          path: OllamaIdleAdjuster.exe
 
   release:
     needs: build
     runs-on: ubuntu-latest
+    if: success()
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
+      - name: Download exe artifact
+        uses: actions/download-artifact@v3
         with:
-          name: ollama-priority-setter.exe
+          name: exe
+          path: ./release
 
-      - name: Create Release
+      - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
-          body: |
-            Automated release build.
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload exe to Release
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ollama-priority-setter.exe
-          asset_name: ollama-priority-setter.exe
-          asset_content_type: application/octet-stream
+          files: ./release/OllamaIdleAdjuster.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
